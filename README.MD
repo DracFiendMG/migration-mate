@@ -1,2 +1,2 @@
 This is my migration mate repository
-Testing qodo on this repository
+Testing Qodo on this repository.
