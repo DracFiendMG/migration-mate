@@ -1,2 +1,1 @@
-This is my migration mate repository
-Testing Qodo on this repository.
+MigrationMate is a human-in-the-loop database migration agent built on TrueForge. It connects to your Supabase/PostgreSQL database, inspects the schema, plans changes, tests them in an isolated sandbox, and opens a reviewed pull request—all while pausing for human approval before any irreversible action. Every migration includes a tested rollback script, making database changes safe, transparent, and audit-ready.
