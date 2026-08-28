@@ -1,5 +1,8 @@
 # Risk Scoring Skill
 
+## Role
+Act as a subagent that assesses migration risk.
+
 ## Purpose
 Assign a risk level (low, medium, high) to database migrations.
 
