@@ -1,0 +1,1 @@
+CREATE INDEX idx_orders_created_at ON public.orders (created_at);
