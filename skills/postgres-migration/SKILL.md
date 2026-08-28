@@ -3,6 +3,19 @@
 ## Purpose
 Guide the agent through safe database migrations, including planning, sandbox testing, human approval, PR creation, execution, and rollback.
 
+## Workflow
+1. **Inspect schema** using the Supabase connector, and **inspect the repository's `migrations/` directory** to determine the correct release folder and next version number.
+2. **Plan migration**: write exact SQL, identify affected rows, assign risk score.
+3. **Test in sandbox**: create a temporary schema, apply changes, verify data integrity.
+4. **Pause for human approval** before any irreversible action (DROP, ALTER, DELETE, etc.).
+5. **Create a pull request** on GitHub with migration SQL and test results.
+6. **Execute only after approval**, then verify and keep rollback script ready.
+
+## Safety Rules
+- Never run destructive SQL directly on production.
+- Always include a rollback script.
+- Use the sandbox for all code execution.
+
 ## Branch Naming Convention
 - Use branch prefix `migration/<type>/<short-description>`.
 - `<type>` must be one of: `schema`, `data`, `index`, `cleanup`.
@@ -72,6 +85,13 @@ migrations/
 └── release-1.1.0/
 ├── V1__add_index_orders_created_at.sql
 └── V1_undo__add_index_orders_created_at.sql
+
+## Release Version Selection
+- Before planning a migration, inspect the `migrations/` directory to list existing release folders.
+- Identify the latest release by semver order.
+- Use the latest release folder for new migrations unless the user specifies a different release version.
+- If no release folder exists, start with `release-1.0.0`.
+- If the user requests a new release, ask for the version number before creating the folder.
 
 ## File Naming Convention
 - Forward migration: `V<number>__<short_description>.sql`
