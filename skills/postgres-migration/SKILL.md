@@ -15,3 +15,9 @@ Guide the agent through safe database migrations, including planning, sandbox te
 - Never run destructive SQL directly on production.
 - Always include a rollback script.
 - Use the sandbox for all code execution.
+
+## Branch Naming Convention
+- Use branch prefix `migration/<type>/<short-description>`.
+- `<type>` must be one of: `schema`, `data`, `index`, `cleanup`.
+- Example: `migration/schema/rename-users-phone`, `migration/data/backfill-phone-number`, `migration/index/add-orders-created-at`, `migration/cleanup/drop-legacy-flags`.
+- Use lowercase with hyphens, no underscores or spaces.
