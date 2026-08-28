@@ -1,5 +1,8 @@
 # Rollback Author Skill
 
+## Role
+Act as a subagent that writes rollback scripts.
+
 ## Purpose
 Generate a rollback script for every migration.
 
