@@ -8,4 +8,7 @@
 -- =========================================================
 
 -- Drop the index created by the forward migration.
+-- This statement reverses the forward migration, does not delete table rows,
+-- and removes an index used to accelerate `created_at` queries.
+-- Dropping the index can degrade the performance of queries that filter or order by `created_at`.
 DROP INDEX public.idx_orders_created_at;

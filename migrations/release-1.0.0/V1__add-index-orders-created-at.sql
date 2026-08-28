@@ -9,6 +9,6 @@
 -- Rollback: V1_undo__add-index-orders-created-at.sql
 -- =========================================================
 
--- Add a non-concurrent B-tree index on the created_at column of the orders table.
+-- Add a concurrent B-tree index on the created_at column of the orders table.
 -- This will improve query performance for queries filtering or ordering by created_at.
 CREATE INDEX CONCURRENTLY idx_orders_created_at ON public.orders (created_at);
