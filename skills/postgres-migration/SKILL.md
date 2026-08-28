@@ -14,7 +14,8 @@ Guide the agent through safe database migrations, including planning, sandbox te
 ## Safety Rules
 - Never run destructive SQL directly on production.
 - Always include a rollback script.
-- Use the sandbox for all code execution.
+- Use the sandbox for **all code execution during testing**.
+- After human approval, execute the approved migration on the production database using the SQL script (via the Supabase connector or SQL editor). Do not use the sandbox for the final execution.
 
 ## Branch Naming Convention
 - Use branch prefix `migration/<type>/<short-description>`.
@@ -78,13 +79,13 @@ Header:
 Example:
 migrations/
 ├── release-1.0.0/
-│ ├── V1__rename_users_phone.sql
-│ ├── V1_undo__rename_users_phone.sql
-│ ├── V2__backfill_phone_number.sql
-│ └── V2_undo__backfill_phone_number.sql
+│   ├── V1__rename-users-phone.sql
+│   ├── V1_undo__rename-users-phone.sql
+│   ├── V2__backfill-phone-number.sql
+│   └── V2_undo__backfill-phone-number.sql
 └── release-1.1.0/
-├── V1__add_index_orders_created_at.sql
-└── V1_undo__add_index_orders_created_at.sql
+    ├── V1__add-index-orders-created-at.sql
+    └── V1_undo__add-index-orders-created-at.sql
 
 ## Release Version Selection
 - Before planning a migration, inspect the `migrations/` directory to list existing release folders.
@@ -96,10 +97,10 @@ migrations/
 ## File Naming Convention
 - Forward migration: `V<number>__<short_description>.sql`
 - Rollback: `V<number>_undo__<short_description>.sql`
-- Use lowercase with hyphens for descriptions.
+- Use lowercase with **hyphens** for descriptions (no underscores).
 - `<number>` is sequential within the release folder (V1, V2, ...).
 - Double underscore after number, single underscore before `undo`, then double underscore before description.
 
 Examples:
-- `V1__rename_users_phone.sql`
-- `V1_undo__rename_users_phone.sql`
+- `V1__rename-users-phone.sql`
+- `V1_undo__rename-users-phone.sql`
