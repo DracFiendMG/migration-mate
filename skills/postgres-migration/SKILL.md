@@ -55,3 +55,31 @@ Header:
 - If required, test rollback as well.
 - Drop the temp schema after successful test.
 - Record results for PR description.
+
+## Migration Folder Structure & Versioning
+- Organize migrations by release version folders under `migrations/`.
+- Each release folder is named `release-<semver>` (e.g., `release-1.0.0`, `release-1.1.0`).
+- Within a release folder, migrations are numbered sequentially starting at `V1`.
+- Every forward migration must have a matching undo file with the same number and `_undo` suffix.
+
+Example:
+migrations/
+├── release-1.0.0/
+│ ├── V1__rename_users_phone.sql
+│ ├── V1_undo__rename_users_phone.sql
+│ ├── V2__backfill_phone_number.sql
+│ └── V2_undo__backfill_phone_number.sql
+└── release-1.1.0/
+├── V1__add_index_orders_created_at.sql
+└── V1_undo__add_index_orders_created_at.sql
+
+## File Naming Convention
+- Forward migration: `V<number>__<short_description>.sql`
+- Rollback: `V<number>_undo__<short_description>.sql`
+- Use lowercase with hyphens for descriptions.
+- `<number>` is sequential within the release folder (V1, V2, ...).
+- Double underscore after number, single underscore before `undo`, then double underscore before description.
+
+Examples:
+- `V1__rename_users_phone.sql`
+- `V1_undo__rename_users_phone.sql`
