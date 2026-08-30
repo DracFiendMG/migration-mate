@@ -99,6 +99,18 @@ migrations/
 - If no release folder exists, start with `release-1.0.0`.
 - If the user requests a new release, ask for the version number before creating the folder.
 
+## Batch Migrations
+When the user provides multiple migration tasks in a single message, treat them as a batch:
+- Plan and test each migration separately using the sandbox.
+- Group all migration SQL files (forward and rollback) into a single branch and a single pull request.
+- Use sequential version numbers for all files in that batch, starting from the next available number after inspecting the repository's `migrations/` directory.
+- Do not create separate pull requests for each migration unless the user explicitly requests that.
+
+## Version Number Assignment
+- Always inspect the existing files in the target release folder to determine the highest version number.
+- Use the next integer for new migrations (e.g., if V1 exists, use V2; if V1 and V2 exist, use V3).
+- Never assume V1 unless the release folder is empty.
+
 ## File Naming Convention
 - Forward migration: `V<number>__<short_description>.sql`
 - Rollback: `V<number>_undo__<short_description>.sql`

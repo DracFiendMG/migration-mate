@@ -1,3 +1,4 @@
 .env*
+demo.md
 node_modules/
 dist/
