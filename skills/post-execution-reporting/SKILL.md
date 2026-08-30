@@ -55,3 +55,10 @@ When the main agent confirms a successful migration execution, use the following
 - Use Markdown tables for tabular data.
 - Keep the output concise; do not include full logs unless asked.
 - If the operation fails, describe the error clearly.
+
+### Data Sensitivity & Redaction
+- Never display sensitive data such as passwords, tokens, API keys, or full PII (e.g., complete email addresses, phone numbers, personal IDs) unless the user explicitly requests it for debugging.
+- Default to showing **counts and summaries** rather than full row content.
+- If you must show rows, redact sensitive columns (e.g., replace with `***`) or select only non-sensitive columns.
+- For INSERT/UPDATE/DELETE, prefer showing only the columns that are directly relevant to the migration (e.g., ID, name) and omit fields like `email`, `phone`, `credit_card`, etc.
+- If unsure whether a column contains sensitive data, ask the user before displaying it.
