@@ -5,7 +5,7 @@
 -- Author: MigrationMate (AI agent)
 -- Date: 2026-08-30T12:45:31.480Z
 -- Database: Supabase PostgreSQL
--- Risk: Medium
+-- Risk: medium
 -- Rollback: V2_undo__increase-price-of-electronics-products.sql
 -- =========================================================
 
