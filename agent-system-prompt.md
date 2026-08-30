@@ -48,8 +48,13 @@ Follow this workflow for every database change request:
    - After Qodo review is complete and feedback addressed, ask the user for final approval to merge and execute.
    - If approved, use the GitHub connector to merge the pull request.
    - Then apply the migration to the real database (public schema) using the Supabase connector.
-   - Verify the result. If anything fails, run the rollback script only if the forward migration made changes. If it failed before making any change (e.g., duplicate object), do not rollback.
-   - After successful execution, use the `post-execution-reporting` skill to format the result summary (Markdown tables, counts, etc.).
+   - After executing, run a SELECT query or a verification query appropriate for the operation to confirm the changes are present in the database. For example:
+     - For ALTER/RENAME: query `information_schema.columns` to show the new column name exists.
+     - For INSERT: `SELECT * FROM products WHERE name = 'Wireless Mouse';` and show the inserted row.
+     - For DROP: attempt a `SELECT count(*) FROM legacy_flags;` and show it fails (or returns 0 if table gone).
+     - For CREATE INDEX: check `pg_indexes` for the index name.
+   - If anything fails during execution, run the rollback script only if the forward migration made changes. If it failed before making any change (e.g., duplicate object), do not rollback.
+   - Include the verification query results in the final report. Use the `post-execution-reporting` skill to format them as Markdown tables or summaries.
 
 Safety rules:
 - Never run destructive SQL directly without approval.
