@@ -10,12 +10,19 @@ The agent can also **merge pull requests and execute migrations directly from th
 
 ---
 
-## Live Demo
+## 🚀 Live Demo
 
-You can try the deployed agent at:  
-`http://139.84.222.183:8791/agents/migration-mate-v1`
+**🔗 Try the deployed agent now:**  
+👉 **[http://139.84.222.183:8791/agents/migration-mate-v1](http://139.84.222.183:8791/agents/migration-mate-v1)**
 
-> Note: The instance is temporarily available for the hackathon judging period. If it's not reachable, please refer to the video demo or run locally using the instructions below.
+> ⚠️ The instance is temporarily available for the hackathon judging period. If it's not reachable, watch the video demo below or run locally using the instructions in this README.
+
+## 🎥 Video Demo
+
+**Watch the full walkthrough:**  
+👉 **[MigrationMate Demo – YouTube](https://youtu.be/2BL3p39hOMo)**
+
+> Prefer a quick overview? The video shows the agent planning, sandbox testing, asking for approval, creating a PR, addressing Qodo review, merging, and executing—all from the chat.
 
 ---
 
@@ -161,16 +168,17 @@ Perform the following database improvements on Supabase project **idlthepdoqgvxj
 ## Qodo Code Review Evidence
 
 ### Representative PR
-- Link: [PR #<number>](https://github.com/DracFiendMG/migration-mate/pull/<number>)
+- Link: [PR #19](https://github.com/DracFiendMG/migration-mate/pull/19)
 
 ### What Qodo surfaced
-- [Describe the main findings, e.g., "Qodo flagged a missing rollback file and a potential lock issue."]
+- Qodo flagged a correctness bug: the rollback script divided prices for products in `Electronics` at rollback time rather than restoring the exact original prices. This could incorrectly discount newly added products or fail to restore moved/re-priced items.
 
 ### What changed or was dismissed
-- [Explain your decisions: "Added the rollback file and added a comment explaining the lock. Dismissed a style suggestion because ..."]
+- The agent addressed the issue by introducing a `products_price_snapshot` table. The forward migration now captures the original `product_id` and `price` before the update. The rollback uses this snapshot to restore the exact original values for affected products, then drops the snapshot table. No findings were dismissed.
 
 ### PR history
-- [Link to the PR's review comments and commits showing Qodo review, your responses, and final merge. Example: "See the PR conversation: <link>"]
+- Qodo review comment: [Rollback targets wrong products](https://github.com/DracFiendMG/migration-mate/pull/19#issuecomment-5468773761)
+- The conversation includes the agent's response, follow-up review, and final merge. See the full PR thread: [PR #19 conversation](https://github.com/DracFiendMG/migration-mate/pull/19)
 
 ---
 
