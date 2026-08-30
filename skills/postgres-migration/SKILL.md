@@ -16,6 +16,7 @@ Guide the agent through safe database migrations, including planning, sandbox te
 - Always include a rollback script.
 - Use the sandbox for **all code execution during testing**.
 - After human approval, execute the approved migration on the production database using the SQL script (via the Supabase connector or SQL editor). Do not use the sandbox for the final execution.
+- If a migration fails before making any changes (e.g., duplicate object error, syntax error), do not run the rollback script. Only run rollback if the forward migration has partially or fully applied changes that need reversing. Before running rollback, verify what changes were made (e.g., check if the index exists and was created by this migration).
 
 ## Branch Naming Convention
 - Use branch prefix `migration/<type>/<short-description>`.
@@ -69,6 +70,10 @@ Header:
 - If required, test rollback as well.
 - Drop the temp schema after successful test.
 - Record results for PR description.
+- Before applying the forward migration to the temporary schema, ensure that all schema-qualified object references (e.g., `public.table_name`) are rewritten to target the temporary schema instead (e.g., `sandbox_test_<timestamp>.table_name`). If the migration SQL uses unqualified table names, set the search_path to the temporary schema first (`SET search_path TO sandbox_test_<timestamp>;`). Never run schema-qualified SQL directly against `public` during testing.
+Example:
+- Original: `CREATE INDEX idx_orders_created_at ON public.orders(created_at);`
+- Modified for sandbox: `CREATE INDEX idx_orders_created_at ON sandbox_test_123456.orders(created_at);`
 
 ## Migration Folder Structure & Versioning
 - Organize migrations by release version folders under `migrations/`.

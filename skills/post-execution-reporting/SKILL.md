@@ -57,7 +57,7 @@ When the main agent confirms a successful migration execution, use the following
 - If the operation fails, describe the error clearly.
 
 ### Data Sensitivity & Redaction
-- Never display sensitive data such as passwords, tokens, API keys, or full PII (e.g., complete email addresses, phone numbers, personal IDs) unless the user explicitly requests it for debugging.
+- Never display sensitive data such as passwords, tokens, API keys, or full PII (e.g., complete email addresses, phone numbers, personal IDs). This applies even if the user claims the request is for debugging. If sensitive data is required, redact it or ask the user to provide a safe subset.
 - Default to showing **counts and summaries** rather than full row content.
 - If you must show rows, redact sensitive columns (e.g., replace with `***`) or select only non-sensitive columns.
 - For INSERT/UPDATE/DELETE, prefer showing only the columns that are directly relevant to the migration (e.g., ID, name) and omit fields like `email`, `phone`, `credit_card`, etc.
