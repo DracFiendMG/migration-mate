@@ -4,7 +4,18 @@
 
 MigrationMate connects to your Supabase/PostgreSQL database, inspects the schema, plans changes, tests them in an isolated sandbox, and opens a reviewed pull request—all while pausing for human approval before any irreversible action. Every migration includes a tested rollback script, making database changes safe, transparent, and audit-ready.
 
+The agent can also **merge pull requests and execute migrations directly from the chat**, and it provides **structured post-execution reports** with Markdown tables showing inserted, updated, or deleted rows.
+
 > *Give AI a license to act—but not a license to break production.*
+
+---
+
+## Live Demo
+
+You can try the deployed agent at:  
+`http://139.84.222.183:8791/agents/migration-mate-v1`
+
+> Note: The instance is temporarily available for the hackathon judging period. If it's not reachable, please refer to the video demo or run locally using the instructions below.
 
 ---
 
@@ -22,14 +33,16 @@ MigrationMate connects to your Supabase/PostgreSQL database, inspects the schema
 
 ## What MigrationMate Does
 
-MigrationMate automates database migrations with strict safety controls. Given a natural-language request, it:
+MigrationMate automates database migrations with strict safety controls. Given a natural-language request, it can handle multiple migrations in one session:
 
-1. **Inspects** the current schema using the Supabase connector.
-2. **Plans** the migration: exact SQL, affected rows, risk score, and rollback script.
-3. **Tests** in a Daytona sandbox by creating a temporary schema, copying affected tables, applying the change, and verifying.
-4. **Asks for human approval** before any irreversible action (DROP, ALTER, DELETE, etc.).
-5. **Creates a pull request** on GitHub with the migration SQL, test results, and rollback script.
-6. **Awaits Qodo review**, then executes only after the PR is approved and the user gives explicit go-ahead.
+- **Inspect** the current schema using the Supabase connector.
+- **Plan** each migration: exact SQL, affected rows, risk score, and rollback script.
+- **Test** in a Daytona sandbox by creating a temporary schema, copying affected tables, applying the change, and verifying.
+- **Ask for human approval** before any irreversible action (DROP, ALTER, DELETE, etc.).
+- **Create a pull request** on GitHub with the migration SQL, test results, and rollback script.
+- **Wait for Qodo review**, then ask for approval to merge the PR.
+- **Merge the PR** from within the chat (no need to visit GitHub).
+- **Execute** the migration on the production database and **report results** using clear Markdown tables (e.g., inserted rows, affected counts).
 
 It is designed for developers who want the speed of AI without losing control over production databases.
 
@@ -40,10 +53,11 @@ It is designed for developers who want the speed of AI without losing control ov
 MigrationMate is built entirely on TrueForge, using its core features:
 
 - **MCP connectors**: Supabase for database access, GitHub for repository operations.
-- **Skills**: Reusable instruction packs for `postgres-migration`, `risk-scoring`, `rollback-author`, `schema-analysis`, and `query-review`.
-- **Dynamic Sub-agents**: The main agent delegates schema analysis, risk assessment, rollback authoring, and SQL review to specialized subagents backed by the skills.
+- **Skills**: Reusable instruction packs for `postgres-migration`, `risk-scoring`, `rollback-author`, `schema-analysis`, `query-review`, and `post-execution-reporting`.
+- **Dynamic Sub-agents**: The main agent delegates schema analysis, risk assessment, rollback authoring, SQL review, and post-execution reporting to specialized subagents backed by the skills.
 - **Sandbox (Daytona)**: All code and SQL testing happens in an isolated environment before touching production.
-- **Human approval**: TrueForge's approval mechanisms are used to pause before irreversible steps.
+- **Human approval**: TrueForge's approval mechanisms are used to pause before irreversible steps, PR merging, and execution.
+- **Generative UI / structured output**: The agent formats execution results as Markdown tables or summaries, improving user clarity.
 - **Persistent sessions**: Migration workflows survive reconnects and refreshes.
 
 This is not a thin wrapper; TrueForge is the backbone of the agent's control plane.
@@ -77,7 +91,7 @@ Open http://localhost:8790.
 ### Step 3: Connect Supabase
 - Go to **Settings → Connectors → Supabase**.
 - Enter your Supabase project ID and service role key (or anon key if read-only).
-- Create sample tables by running the SQL in `examples/schema.sql` (see repo).
+- Run the SQL script in `examples/schema.sql` to create the demo tables and data.
 
 ### Step 4: Connect GitHub
 - Go to **Settings → Connectors → GitHub**.
@@ -96,16 +110,18 @@ Open http://localhost:8790.
   - `skills/rollback-author`
   - `skills/schema-analysis`
   - `skills/query-review`
+  - `skills/post-execution-reporting`
 
 ### Step 7: Create the Agent
 - Start a new chat, choose the Gemini model, enable all tools and skills.
 - Paste the system prompt from `agent-system-prompt.md` into the agent instructions.
-- Save the agent.
+- Save the agent as "MigrationMate".
 
 ---
 
 ## Running the Demo
 
+### Simple single migration
 1. Ensure Supabase has sample tables (see `examples/schema.sql`).
 2. Ask the agent:
    > "Rename the `phone` column in `users` to `phone_number`. Plan the migration, test it, and ask for my approval before applying."
@@ -116,14 +132,26 @@ Open http://localhost:8790.
    - Pause for approval.
    - Create a branch and PR.
    - Qodo reviews; agent may address comments.
-4. After you approve and merge, tell the agent to execute. It will apply the migration to the public schema.
+   - After your approval, the agent merges the PR and executes.
+   - It shows a summary of the result.
+
+### Advanced multi-step demo
+Use the following prompt to showcase multiple migration types:
+Perform the following database improvements on Supabase project **idlthepdoqgvxjzdwibr**:
+
+1. Rename the phone column in users to phone_number.
+2. Backfill any missing phone_number values in users using the phone column from profiles where users.phone_number is null.
+3. Add an index named idx_orders_created_at on orders.created_at.
+4. Drop the unused table legacy_flags.
+5. Insert a new product with name 'Wireless Mouse', price 24.99, stock_quantity 150, category 'Electronics'.
+6. For each item, plan, test, ask approval, create PR, wait for Qodo, merge, execute, and report.
 
 ---
 
 ## Safety Features
 
 - **Sandbox testing**: All SQL runs first in an isolated schema copied from production.
-- **Human approval**: Any destructive operation stops for explicit user confirmation.
+- **Human approval**: Any destructive operation, PR merge, and execution stops for explicit user confirmation.
 - **Rollback scripts**: Every migration includes a tested undo file.
 - **Qodo review**: All code changes go through a PR with automated review.
 - **No secrets**: API keys and tokens are kept out of the repository (see `.env.example`).
@@ -148,6 +176,7 @@ Open http://localhost:8790.
 
 ## Project Structure
 
+```text
 migration-mate/
 ├── README.md
 ├── agent-system-prompt.md
@@ -162,7 +191,9 @@ migration-mate/
 │   │   └── SKILL.md
 │   ├── schema-analysis/
 │   │   └── SKILL.md
-│   └── query-review/
+│   ├── query-review/
+│   │   └── SKILL.md
+│   └── post-execution-reporting/
 │       └── SKILL.md
 ├── migrations/
 │   └── release-1.0.0/
@@ -171,7 +202,7 @@ migration-mate/
 ├── examples/
 │   └── schema.sql
 └── (optional) ui/
-
+```
 ---
 
 ## License
