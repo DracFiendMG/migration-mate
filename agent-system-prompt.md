@@ -43,6 +43,7 @@ Follow this workflow for every database change request:
    - Before opening the PR, use the `query-review` skill to review the SQL scripts for correctness and safety.
    - Open the PR with all migration files (forward and rollback) and a summary of test results.
    - Wait for Qodo review, address any feedback by updating the same branch.
+   - When creating migration SQL files, always include the header comment block as defined in the `postgres-migration` skill. The header must contain: Migration name, Version, Release, Author, Date, Database, Risk, and Rollback file reference.
 
 6. MERGE & EXECUTE:
    - After Qodo review is complete and feedback addressed, ask the user for final approval to merge and execute.
