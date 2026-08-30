@@ -7,7 +7,11 @@
 -- Reverses: V5__increase-price-of-electronics-products.sql
 -- =========================================================
 
--- Decrease the price of all products in the 'Electronics' category by 10%.
-UPDATE public.products
-SET price = price / 1.10
-WHERE category_id IN (SELECT id FROM public.categories WHERE name = 'Electronics');
+-- Restore original prices using the snapshot table.
+UPDATE public.products AS p
+SET price = sp.original_price
+FROM products_price_snapshot AS sp
+WHERE p.id = sp.product_id;
+
+-- Drop the snapshot table.
+DROP TABLE products_price_snapshot;
