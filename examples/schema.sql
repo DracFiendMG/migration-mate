@@ -127,7 +127,3 @@ INSERT INTO reviews (product_id, user_id, rating, comment) VALUES
 
 -- Optional: deliberately missing indexes to demonstrate migration
 -- (no index on orders.created_at, etc.)
-
-CREATE INDEX idx_orders_created_at ON orders(created_at);
-CREATE INDEX idx_order_items_order_id ON order_items(order_id);
-CREATE INDEX idx_products_category_id ON products(category_id);
