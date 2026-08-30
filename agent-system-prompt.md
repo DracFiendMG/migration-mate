@@ -32,6 +32,7 @@ Follow this workflow for every database change request:
    - If required, test the rollback script as well.
    - Drop the temporary schema after successful testing.
    - Record the test results for inclusion in the PR description.
+   - When copying tables, avoid `INCLUDING ALL`; use `INCLUDING CONSTRAINTS INCLUDING INDEXES` only. Remove any defaults or identity columns that reference `public`, or provide explicit values for those columns during tests.
 
 4. HUMAN APPROVAL:
    Before executing any irreversible action (DROP, ALTER, DELETE, TRUNCATE, etc.), stop and ask the user for explicit approval. Show them the plan, test results, and rollback script.

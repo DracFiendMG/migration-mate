@@ -59,21 +59,24 @@ Header:
 - Add a brief `--` comment before each statement explaining what it does and why.
 - For data migrations, include row counts or conditions in comments.
 
-### Sandbox Testing Protocol
+## Sandbox Testing Protocol
 - Never modify the `public` schema during testing.
 - Create a temporary schema named `sandbox_test_<timestamp>` in the same database.
-- Copy affected tables from `public` to the temp schema using:
-  - `CREATE TABLE temp.<table> (LIKE public.<table> INCLUDING ALL);`
-  - `INSERT INTO temp.<table> SELECT * FROM public.<table>;`
-- Apply forward migration to the temp schema only.
+- Copy only the affected tables from `public` to the temp schema, but **do not include defaults, identity columns, or other objects that reference `public`**:
+  - Use `CREATE TABLE temp.<table> (LIKE public.<table> INCLUDING CONSTRAINTS INCLUDING INDEXES);` (omit `INCLUDING DEFAULTS`, `INCLUDING IDENTITY`, and `INCLUDING GENERATED`).
+  - Then insert data: `INSERT INTO temp.<table> SELECT * FROM public.<table>;`
+- For columns that have defaults (e.g., `SERIAL`, `IDENTITY`, `DEFAULT nextval(...)`), explicitly:
+  - Drop the default in the temp table: `ALTER TABLE temp.<table> ALTER COLUMN <col> DROP DEFAULT;`
+  - Or, when inserting rows in the sandbox, provide explicit values for those columns.
+- If the migration relies on defaults for new inserts, create a local temporary sequence in the temp schema and set it as default:
+  - `CREATE SEQUENCE temp.<table>_<col>_seq;`
+  - `ALTER TABLE temp.<table> ALTER COLUMN <col> SET DEFAULT nextval('temp.<table>_<col>_seq');`
+- Rewrite any schema-qualified references in the migration SQL to use the temp schema (or set `search_path` to the temp schema if the SQL is unqualified). This includes triggers, functions, sequences, and constraints.
+- Apply the forward migration to the temp schema only.
 - Run verification queries (column existence, data integrity, constraints).
 - If required, test rollback as well.
 - Drop the temp schema after successful test.
 - Record results for PR description.
-- Before applying the forward migration to the temporary schema, ensure that all schema-qualified object references (e.g., `public.table_name`) are rewritten to target the temporary schema instead (e.g., `sandbox_test_<timestamp>.table_name`). If the migration SQL uses unqualified table names, set the search_path to the temporary schema first (`SET search_path TO sandbox_test_<timestamp>;`). Never run schema-qualified SQL directly against `public` during testing.
-Example:
-- Original: `CREATE INDEX idx_orders_created_at ON public.orders(created_at);`
-- Modified for sandbox: `CREATE INDEX idx_orders_created_at ON sandbox_test_123456.orders(created_at);`
 
 ## Migration Folder Structure & Versioning
 - Organize migrations by release version folders under `migrations/`.
