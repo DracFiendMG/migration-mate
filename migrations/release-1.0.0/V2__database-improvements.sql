@@ -1,5 +1,5 @@
 -- =========================================================
--- Migration: Database improvements - rename column, backfill, add index, drop table, insert product
+-- Migration: Database improvements - rename column, backfill, drop table, insert product
 -- Version: V2
 -- Release: release-1.0.0
 -- Author: MigrationMate (AI agent)
@@ -18,10 +18,9 @@ SET phone_number = p.phone
 FROM public.profiles p
 WHERE u.id = p.user_id AND u.phone_number IS NULL AND p.phone IS NOT NULL;
 
--- Add an index named 'idx_orders_created_at' on 'orders.created_at'.
-CREATE INDEX CONCURRENTLY idx_orders_created_at ON public.orders (created_at);
-
--- Drop the unused table 'legacy_flags'.
+-- DESTRUCTIVE: Drop the unused table 'legacy_flags'.
+-- This operation permanently removes the table and all its data.
+-- Data cannot be restored by the rollback script.
 DROP TABLE public.legacy_flags;
 
 -- Insert a new product with name 'Wireless Mouse', price 24.99, stock_quantity 150, category 'Electronics' (using category_id = 1).
