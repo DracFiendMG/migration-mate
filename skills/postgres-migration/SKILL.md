@@ -26,6 +26,7 @@ Guide the agent through safe database migrations, including planning, sandbox te
 
 ## Migration Script Typography
 Every SQL migration file must include a header comment block and inline comments where useful.
+- The header block is required for every migration file. Do not omit it.
 
 ### Forward migration files (`V<number>__<description>.sql`)
 Header:
