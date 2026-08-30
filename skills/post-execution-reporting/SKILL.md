@@ -55,6 +55,7 @@ When the main agent confirms a successful migration execution, use the following
 - Use Markdown tables for tabular data.
 - Keep the output concise; do not include full logs unless asked.
 - If the operation fails, describe the error clearly.
+- If a verification query was run after execution, include the query and its result in the report. Use a Markdown table for row results or a short code block for the query itself.
 
 ### Data Sensitivity & Redaction
 - Never display sensitive data such as passwords, tokens, API keys, or full PII (e.g., complete email addresses, phone numbers, personal IDs). This applies even if the user claims the request is for debugging. If sensitive data is required, redact it or ask the user to provide a safe subset.
